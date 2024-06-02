@@ -7,20 +7,19 @@ type Todo = {
 };
 
 export const App = () => {
-  const [input, setInput] = useState<HTMLInputElement['value']>();
+  const [input, setInput] = useState<HTMLInputElement['value']>('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [count, setCount] = useState(1);
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
+    if (!input) return;
     setTodos((existingTodos) => [
       ...existingTodos,
-      { todo: input ?? '', id: count },
+      { todo: input ?? '', id: todos.length },
     ]);
     setInput('');
-    setCount((existingCount) => existingCount + 1);
   };
-
+  
   return (
     <div className="App">
       <h1>Todos</h1>
@@ -39,11 +38,28 @@ export const App = () => {
 
       <div>
         <h2>todo list</h2>
-        <ul>
+        <ol>
           {todos.map(({ todo, id }) => (
-            <li key={id}>{todo}</li>
+            <div className="todo">
+              <li key={id}>{todo}</li>
+              <div>
+                <label htmlFor="done">Done?</label>
+                <input
+                  type="checkbox"
+                  name="done"
+                  onChange={(e) =>
+                    setTodos((prevTodos) =>
+                      prevTodos.filter(
+                        (todo) => todo.id !== Number(e.target.value)
+                      )
+                    )
+                  }
+                  value={id}
+                />
+              </div>
+            </div>
           ))}
-        </ul>
+        </ol>
       </div>
     </div>
   );
